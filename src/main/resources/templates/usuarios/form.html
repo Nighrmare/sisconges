@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario Usuario</title>
+</head>
+
+<body>
+
+<h1 th:text="${usuarios.id_usuarios == null} ? 'Registrar Usuario' : 'Editar Usuario'">
+    Formulario Usuario
+</h1>
+
+<hr>
+
+<form th:action="@{/view/usuarios/save}"
+      th:object="${usuarios}"
+      method="post">
+
+    <input type="hidden" th:field="*{id_usuarios}">
+
+    <table>
+
+        <tr>
+            <td>
+                <label>Nombre(s):</label>
+            </td>
+            <td>
+                <input type="text"
+                       th:field="*{nombres}"
+                       required>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label>Apellido(s):</label>
+            </td>
+            <td>
+                <input type="text"
+                       th:field="*{apellidos}"
+                       required>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label>Correo:</label>
+            </td>
+            <td>
+                <input type="email"
+                       th:field="*{correo}"
+                       required>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label>Tipo de documento:</label>
+            </td>
+            <td>
+                <select th:field="*{tipo_documento}" required>
+                    <option value="">Seleccione...</option>
+                    <option value="CC">Cédula de Ciudadanía</option>
+                    <option value="TI">Tarjeta de Identidad</option>
+                    <option value="CE">Cédula de Extranjería</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label>Número de documento:</label>
+            </td>
+            <td>
+                <input type="text"
+                       th:field="*{numero_documento}"
+                       required>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label>Fecha de nacimiento:</label>
+            </td>
+            <td>
+                <input type="date"
+                       name="fecha_nacimiento"
+                       th:value="${usuarios.fecha_nacimiento != null ? #temporals.format(usuarios.fecha_nacimiento, 'yyyy-MM-dd') : ''}"
+                       required>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label>Contraseña:</label>
+            </td>
+            <td>
+                <input type="password"
+                       th:field="*{contrasena}">
+
+                <span th:if="${usuarios.id_usuarios != null}">
+                (Dejar vacío para conservar la contraseña actual)
+            </span>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label>Rol:</label>
+            </td>
+            <td>
+                <input type="text"
+                       th:field="*{rol}">
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label>Estado:</label>
+            </td>
+            <td>
+                <select th:field="*{estado}" required>
+                    <option value="">Seleccione...</option>
+                    <option value="Activo">Activo</option>
+                    <option value="Inactivo">Inactivo</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+
+                <button type="submit">
+                    Guardar
+                </button>
+
+                <a th:href="@{/view/usuarios}">
+                    Volver
+                </a>
+
+            </td>
+        </tr>
+
+    </table>
+
+</form>
+
+</body>
+
+</html>

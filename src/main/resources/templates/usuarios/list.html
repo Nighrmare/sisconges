@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Usuarios</title>
+</head>
+
+<body>
+
+<h1>Gestión de Usuarios</h1>
+
+
+<div th:if="${message}">
+    <p th:text="${message}"></p>
+</div>
+
+<hr>
+
+
+<a th:href="@{/view/usuarios/form}">
+    Registrar Usuario
+</a>
+
+<hr>
+
+<h2>Lista de Usuarios Registrados</h2>
+
+<table border="1" cellpadding="5" cellspacing="0">
+
+    <thead>
+
+    <tr>
+        <th>Acciones</th>
+        <th>ID Usuario</th>
+        <th>Nombres</th>
+        <th>Apellidos</th>
+        <th>Correo</th>
+        <th>Tipo Documento</th>
+        <th>Número Documento</th>
+        <th>Fecha Nacimiento</th>
+        <th>Rol</th>
+        <th>Estado</th>
+    </tr>
+
+    </thead>
+
+    <tbody>
+
+    <tr th:each="usuario : ${usuarios}">
+
+        <td>
+
+            <a th:href="@{'/view/usuarios/update/' + ${usuario.id_usuarios}}">
+                Editar
+            </a>
+
+            <form th:action="@{'/view/usuarios/delete/' + ${usuario.id_usuarios}}"
+                  method="post">
+
+                <button type="submit">
+                    Eliminar
+                </button>
+
+            </form>
+
+        </td>
+
+        <td th:text="${usuario.id_usuarios}"></td>
+
+        <td th:text="${usuario.nombres}"></td>
+
+        <td th:text="${usuario.apellidos}"></td>
+
+        <td th:text="${usuario.correo}"></td>
+
+        <td th:text="${usuario.tipo_documento}"></td>
+
+        <td th:text="${usuario.numero_documento}"></td>
+
+        <td th:text="${usuario.fecha_nacimiento}"></td>
+
+        <td th:text="${usuario.rol}"></td>
+
+        <td th:text="${usuario.estado}"></td>
+
+    </tr>
+
+    <tr th:if="${#lists.isEmpty(usuarios)}">
+
+        <td colspan="10">
+            No hay usuarios registrados.
+        </td>
+
+    </tr>
+
+    </tbody>
+
+</table>
+
+</body>
+
+</html>
