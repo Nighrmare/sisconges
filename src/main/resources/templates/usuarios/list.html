@@ -1,104 +1,331 @@
 <!DOCTYPE html>
-
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <title>Lista de Usuarios</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
 <body>
 
-<h1>Gestión de Usuarios</h1>
+<div th:replace="~{fragments/menu :: menu}"></div>
 
+<div class="container">
 
-<div th:if="${message}">
-    <p th:text="${message}"></p>
+    <div class="page-header">
+        <h1>Gestión de Usuarios</h1>
+
+        <div class="user-box">
+            Luisa | Administrador
+        </div>
+    </div>
+
+    <div th:if="${message}" class="message">
+        <p th:text="${message}"></p>
+    </div>
+
+    <div class="card">
+
+        <div class="section-header">
+            <div>
+                <h2>Usuarios Registrados</h2>
+
+                <p class="user-count">
+                    Total de usuarios:
+                    <strong th:text="${#lists.size(usuarios)}"></strong>
+                </p>
+            </div>
+
+            <button class="btn btn-primary"
+                    type="button"
+                    onclick="abrirModalCrear()">
+                + Crear usuario
+            </button>
+        </div>
+
+        <div th:if="${#lists.isEmpty(usuarios)}" class="empty-state">
+
+            <p>No hay usuarios registrados.</p>
+
+            <br>
+
+            <button class="btn btn-primary"
+                    type="button"
+                    onclick="abrirModalCrear()">
+                Registrar el primer usuario
+            </button>
+
+        </div>
+
+        <div th:if="${!#lists.isEmpty(usuarios)}" class="table-container">
+
+            <table>
+
+                <thead>
+                <tr>
+                    <th>ID Usuario</th>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Usuario</th>
+                    <th>Correo</th>
+                    <th>Tipo Documento</th>
+                    <th>Número Documento</th>
+                    <th>Fecha Nacimiento</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr th:each="usuario : ${usuarios}">
+
+                    <td th:text="${usuario.id_usuarios}"></td>
+                    <td th:text="${usuario.nombres}"></td>
+                    <td th:text="${usuario.apellidos}"></td>
+                    <td th:text="${usuario.usuario}"></td>
+                    <td th:text="${usuario.correo}"></td>
+                    <td th:text="${usuario.tipo_documento}"></td>
+                    <td th:text="${usuario.numero_documento}"></td>
+                    <td th:text="${usuario.fecha_nacimiento}"></td>
+                    <td th:text="${usuario.rol}"></td>
+                    <td>
+                        <span class="status"
+                              th:classappend="${usuario.estado == 'Activo'} ? ' success' : ' warning'"
+                              th:text="${usuario.estado}">
+                        </span>
+                    </td>
+
+                    <td class="actions">
+                        <button class="action-btn edit"
+                                type="button"
+                                th:data-id="${usuario.id_usuarios}"
+                                th:data-nombres="${usuario.nombres}"
+                                th:data-apellidos="${usuario.apellidos}"
+                                th:data-usuario="${usuario.usuario}"
+                                th:data-correo="${usuario.correo}"
+                                th:data-tipo-documento="${usuario.tipo_documento}"
+                                th:data-numero-documento="${usuario.numero_documento}"
+                                th:data-fecha-nacimiento="${usuario.fecha_nacimiento}"
+                                th:data-rol="${usuario.rol}"
+                                th:data-estado="${usuario.estado}"
+                                onclick="abrirModalEditar(this)">
+                            Editar
+                        </button>
+
+                        <form th:action="@{'/view/usuarios/toggle/' + ${usuario.id_usuarios}}"
+                              method="post"
+                              style="display:inline;">
+
+                            <button class="action-btn delete"
+                                    type="submit"
+                                    th:attr="data-estado=${usuario.estado}"
+                                    onclick="return confirmarCambioEstado(this);"
+                                    th:text="${usuario.estado == 'Activo'} ? 'Desactivar' : 'Activar'">
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
-<hr>
+<div id="modalUsuario" class="modal">
 
+    <div class="modal-content">
 
-<a th:href="@{/view/usuarios/form}">
-    Registrar Usuario
-</a>
+        <div class="modal-header">
 
-<hr>
+            <div>
+                <h2 id="tituloModal">Crear usuario</h2>
+            </div>
 
-<h2>Lista de Usuarios Registrados</h2>
+            <button type="button"
+                    class="modal-close"
+                    onclick="cerrarModalUsuario()">
+                &times;
+            </button>
 
-<table border="1" cellpadding="5" cellspacing="0">
+        </div>
 
-    <thead>
+        <div class="modal-body">
 
-    <tr>
-        <th>Acciones</th>
-        <th>ID Usuario</th>
-        <th>Nombres</th>
-        <th>Apellidos</th>
-        <th>Correo</th>
-        <th>Tipo Documento</th>
-        <th>Número Documento</th>
-        <th>Fecha Nacimiento</th>
-        <th>Rol</th>
-        <th>Estado</th>
-    </tr>
+            <p id="textoModal" class="form-subtitle">
+                Ingrese los datos del nuevo usuario
+            </p>
 
-    </thead>
+            <br>
 
-    <tbody>
+            <form id="formUsuario"
+                  th:action="@{/view/usuarios/save}"
+                  method="post"
+                  novalidate>
 
-    <tr th:each="usuario : ${usuarios}">
+                <input type="hidden"
+                       id="id_usuarios"
+                       name="id_usuarios">
 
-        <td>
+                <div class="form-grid">
 
-            <a th:href="@{'/view/usuarios/update/' + ${usuario.id_usuarios}}">
-                Editar
-            </a>
+                    <div class="form-group">
+                        <label for="nombres">Nombre(s)</label>
 
-            <form th:action="@{'/view/usuarios/delete/' + ${usuario.id_usuarios}}"
-                  method="post">
+                        <input type="text"
+                               id="nombres"
+                               name="nombres"
+                               placeholder="Ingrese los nombres">
+                    </div>
 
-                <button type="submit">
-                    Eliminar
-                </button>
+                    <div class="form-group">
+                        <label for="apellidos">Apellido(s)</label>
+
+                        <input type="text"
+                               id="apellidos"
+                               name="apellidos"
+                               placeholder="Ingrese los apellidos">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="usuario">Usuario</label>
+
+                        <input type="text"
+                               id="usuario"
+                               name="usuario"
+                               class="input-readonly"
+                               placeholder="Se generará automáticamente"
+                               readonly>
+
+                        <small class="modal-help">
+                            Se genera automáticamente a partir del nombre y apellido.
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="correo">Correo electrónico</label>
+
+                        <input type="email"
+                               id="correo"
+                               name="correo"
+                               placeholder="ejemplo@correo.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tipo_documento">Tipo de documento</label>
+
+                        <select id="tipo_documento"
+                                name="tipo_documento">
+
+                            <option value="">Seleccione...</option>
+                            <option value="CC">Cédula de Ciudadanía</option>
+                            <option value="TI">Tarjeta de Identidad</option>
+
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="numero_documento">Número de documento</label>
+
+                        <input type="text"
+                               id="numero_documento"
+                               name="numero_documento"
+                               placeholder="Ingrese el número">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fecha_nacimiento">Fecha de nacimiento</label>
+
+                        <input type="date"
+                               id="fecha_nacimiento"
+                               name="fecha_nacimiento">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contrasena">Contraseña</label>
+
+                        <input type="password"
+                               id="contrasena"
+                               name="contrasena"
+                               placeholder="Ingrese la contraseña">
+
+                        <small class="modal-help">
+                            En edición, dejar vacío para conservar la contraseña actual.
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rol">Rol</label>
+
+                        <select id="rol"
+                                name="rol">
+
+                            <option value="">Seleccione...</option>
+                            <option value="Administrador">Administrador</option>
+                            <option value="Empleado">Empleado</option>
+
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="estado">Estado</label>
+
+                        <select id="estado"
+                                name="estado">
+
+                            <option value="">Seleccione...</option>
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">Inactivo</option>
+
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="modal-actions">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            onclick="cerrarModalUsuario()">
+                        Cancelar
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Guardar usuario
+                    </button>
+
+                </div>
 
             </form>
 
-        </td>
+        </div>
 
-        <td th:text="${usuario.id_usuarios}"></td>
+    </div>
 
-        <td th:text="${usuario.nombres}"></td>
+</div>
 
-        <td th:text="${usuario.apellidos}"></td>
+<script th:src="@{/js/script.js}"></script>
 
-        <td th:text="${usuario.correo}"></td>
+<script
+        th:if="${message}"
+        th:inline="javascript">
 
-        <td th:text="${usuario.tipo_documento}"></td>
+    const mensajeServidor = /*[[${message}]]*/ '';
 
-        <td th:text="${usuario.numero_documento}"></td>
+    window.addEventListener("DOMContentLoaded", function()
+    {
+        mostrarAlerta(
+            "Operación exitosa",
+            mensajeServidor,
+            "success"
+        );
+    });
 
-        <td th:text="${usuario.fecha_nacimiento}"></td>
-
-        <td th:text="${usuario.rol}"></td>
-
-        <td th:text="${usuario.estado}"></td>
-
-    </tr>
-
-    <tr th:if="${#lists.isEmpty(usuarios)}">
-
-        <td colspan="10">
-            No hay usuarios registrados.
-        </td>
-
-    </tr>
-
-    </tbody>
-
-</table>
-
+</script>
 </body>
 
 </html>
+
