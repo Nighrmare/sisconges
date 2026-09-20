@@ -17,7 +17,9 @@
         <h1>Gestión de Usuarios</h1>
 
         <div class="user-box">
-            Luisa | Administrador
+            <span th:text="${session.usuarioNombre}">Usuario</span>
+            |
+            <span th:text="${session.usuarioRol}">Rol</span>
         </div>
     </div>
 
@@ -222,7 +224,6 @@
                             <option value="">Seleccione...</option>
                             <option value="CC">Cédula de Ciudadanía</option>
                             <option value="TI">Tarjeta de Identidad</option>
-
                         </select>
                     </div>
 
@@ -265,7 +266,6 @@
                             <option value="">Seleccione...</option>
                             <option value="Administrador">Administrador</option>
                             <option value="Empleado">Empleado</option>
-
                         </select>
                     </div>
 
@@ -296,35 +296,15 @@
                             class="btn btn-primary">
                         Guardar usuario
                     </button>
-
+                    
                 </div>
-
             </form>
-
         </div>
-
     </div>
-
 </div>
 
 <script th:src="@{/js/script.js}"></script>
 
-<script
-        th:if="${message}"
-        th:inline="javascript">
-
-    const mensajeServidor = /*[[${message}]]*/ '';
-
-    window.addEventListener("DOMContentLoaded", function()
-    {
-        mostrarAlerta(
-            "Operación exitosa",
-            mensajeServidor,
-            "success"
-        );
-    });
-
-</script>
 </body>
 
 </html>

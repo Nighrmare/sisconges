@@ -479,4 +479,75 @@ window.addEventListener("DOMContentLoaded", function()
             }
         });
     }
+    const mensajeServidor =
+        document.body.dataset.message;
+
+    if (mensajeServidor) {
+        mostrarAlerta(
+            "Operación exitosa",
+            mensajeServidor,
+            "success"
+        );
+    }
+
+    const formLogin =
+        document.getElementById("formLogin");
+
+    if (formLogin)
+    {
+        const mensajeError = formLogin.dataset.error;
+
+        if (mensajeError)
+        {
+            mostrarAlerta(
+                "Inicio de sesión",
+                mensajeError
+            );
+        }
+
+        formLogin.addEventListener(
+            "submit",
+            function(event)
+            {
+                const usuario =
+                    document.getElementById("usuario");
+
+                const contrasena =
+                    document.getElementById("contrasena");
+
+
+                if (!usuario || usuario.value.trim() === "")
+                {
+                    event.preventDefault();
+
+                    mostrarAlerta(
+                        "Inicio de sesión",
+                        "Ingrese su usuario."
+                    );
+
+                    if (usuario)
+                    {
+                        usuario.focus();
+                    }
+
+                    return;
+                }
+
+                if (!contrasena || contrasena.value.trim() === "")
+                {
+                    event.preventDefault();
+
+                    mostrarAlerta(
+                        "Inicio de sesión",
+                        "Ingrese su contraseña."
+                    );
+
+                    if (contrasena)
+                    {
+                        contrasena.focus();
+                    }
+                }
+            }
+        );
+    }
 });
